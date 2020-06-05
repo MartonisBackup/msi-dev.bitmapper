@@ -1,0 +1,22 @@
+{
+  "name": "@msi.js/msi.bitmapper",
+  "version": "0.0.1",
+  "description": "",
+  "author": "",
+  "license": "MIT",
+  "scripts": {
+    "clean": "find src -name '*.js' -delete && find src -name '*.js.map' -delete && tsc"
+  },
+  "dependencies": {
+    "bit-buffer": "0.2.4",
+    "lodash": "4.17.15"
+  },
+  "devDependencies": {
+    "@types/chai": "4.2.11",
+    "@types/lodash": "4.14.155",
+    "@types/mocha": "7.0.2",
+    "@types/node": "14.0.10",
+    "chai": "4.2.0",
+    "typescript": "3.9.5"
+  }
+}

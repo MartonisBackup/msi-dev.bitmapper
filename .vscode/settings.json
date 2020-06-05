@@ -1,0 +1,16 @@
+{
+    "files.exclude": {
+        "**/*.js.map": true,
+        "**/*.js": {
+            "when": "$(basename).ts"
+        }, 
+        "**/*?.js": {
+            "when": "$(basename).tsx"
+        },
+        "**/node_modules": true,
+        "**/dist": true,
+        "**/*.css.d.ts": true,
+        "package-lock.json": true
+    },
+    "editor.tabSize": 4
+}

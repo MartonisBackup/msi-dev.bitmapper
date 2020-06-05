@@ -1,0 +1,9 @@
+# .npmignore
+.gitignore
+.npmignore
+package-lock.json
+/.vscode
+/.vs
+*.pem
+*.ts
+*.js.map
