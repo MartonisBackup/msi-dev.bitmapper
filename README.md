@@ -59,10 +59,11 @@ Also don't need to use any class decorator.
     const buffer = toBitBuffer(x, { bitmap });
     const obj2 = fromBitBuffer(buffer, { bitmap });
 ```
+_For more examples and usage, please refer to the [Test](https://github.com/msi-dev/bitmapper/blob/master/test/test.spec.ts)._
 
 ## Release History
 * 0.0.3
-    * finished rearme
+    * finished readme
     * Add non typescript option without use of decorators
 * 0.0.2
     * Fix ignores
