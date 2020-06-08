@@ -1,8 +1,8 @@
 {
   "name": "bitmapper",
   "version": "0.0.1",
-  "description": "",
-  "author": "",
+  "description": "Map objects to a compact buffer using a bit map and reverse it.",
+  "author": "moraisp",
   "license": "MIT",
   "scripts": {
     "clean": "find src -name '*.js' -delete && find src -name '*.js.map' -delete && tsc"

@@ -5,7 +5,7 @@ import { fromBitBuffer, toBitBuffer } from './mapper';
 
 export function bitMappable<T extends { new(...args: any[]): {} }>(constructor: T) {
     return class extends constructor {
-        private _map: ValueMap[];
+        _map: ValueMap[];
         static fromBitBuffer(buffer: Buffer) : InstanceType<T> {
            return fromBitBuffer(buffer, constructor);
         }

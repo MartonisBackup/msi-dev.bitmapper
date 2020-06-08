@@ -1,9 +1,11 @@
 # .npmignore
 .gitignore
 .npmignore
+tsconfig.json
+*.tsbuildinfo
 package-lock.json
+/test
 /.vscode
-/.vs
-*.pem
 *.ts
 *.js.map
+!**.d.ts
