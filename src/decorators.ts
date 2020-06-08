@@ -3,15 +3,20 @@ import { ValueMap, ValueType, TargetMap, ValueParam } from './types';
 import { fromBitBuffer, toBitBuffer } from './mapper';
 // import { HeaderType, ValueType, Value } from "./binaryMap";
 
-export function bitMappable<T extends { new(...args: any[]): {} }>(constructor: T) {
-    return class extends constructor {
+// export interface BitMappable<T> {
+//     static fromBitBuffer(buffer: Buffer) : InstanceType<T>
+// }
+
+export function bitMappable<T extends { new(...args: any[]): {} }>(type: T) {
+    return class extends type {
         _map: ValueMap[];
-        static fromBitBuffer(buffer: Buffer) : InstanceType<T> {
-           return fromBitBuffer(buffer, constructor);
+        static fromBitBuffer(buffer: Buffer) {
+           return fromBitBuffer(buffer, { type: bitMappable(type) });
         }
 
         toBitBuffer(): Buffer {
-            return toBitBuffer(this, constructor);
+
+            return toBitBuffer(this, { type: type });
         }
     }
 }

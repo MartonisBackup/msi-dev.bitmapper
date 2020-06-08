@@ -10,7 +10,7 @@ class TestUnsigned {
   value2: number;
 }
 
-let TestUnsignedMappable = bitMappable(TestUnsigned);
+const TestUnsignedMappable = bitMappable(TestUnsigned);
 
 class TestSigned {
   @value({ size: 4, type: ValueType.signed })
@@ -21,7 +21,7 @@ class TestSigned {
   value3: number;
 }
 
-let TestSignedMappable = bitMappable(TestSigned);
+const TestSignedMappable = bitMappable(TestSigned);
 
 class TestBuffer {
   @value({ size: 4, type: ValueType.unsigned })
@@ -34,7 +34,7 @@ class TestBuffer {
   value3: Buffer;
 }
 
-let TestBufferMappable = bitMappable(TestBuffer);
+const TestBufferMappable = bitMappable(TestBuffer);
 
 class TestArrayItem {
   @value({ size: 4 })
@@ -50,7 +50,7 @@ class TestArray {
   array: TestArrayItem[];
 }
 
-let TestArrayMappable = bitMappable(TestArray);
+const TestArrayMappable = bitMappable(TestArray);
 
 class TestMixItem {
   @value({ size: 10 })
@@ -62,7 +62,7 @@ class TestMixItem {
 class TestMix {
   @value({ size: 14, type: TestMixItem })
   index: TestMixItem[];
-  @value({ size: 46 })
+  @value({ size: 46, type: ValueType.buffer })
   filler: Buffer;
   @value({ size: 10 })
   issuer: number;
@@ -82,11 +82,11 @@ class TestMix {
   time: number;
   @value({ size: 4 })
   filler3: number;
-  @value({ size: 48 })
+  @value({ size: 48, type: ValueType.buffer })
   mac: Buffer;
 }
 
-let TestMixMappable = bitMappable(TestMix);
+const TestMixMappable = bitMappable(TestMix);
 
 class TestBigMix {
   @value({ size: 4 })
@@ -159,7 +159,7 @@ class TestBigMix {
   mAC: Buffer;
 }
 
-let TestBigMixMappable = bitMappable(TestBigMix);
+const TestBigMixMappable = bitMappable(TestBigMix);
 
 describe("Bitmapper", () => {
   it("only unsigned", async () => {
@@ -170,7 +170,6 @@ describe("Bitmapper", () => {
     console.log(`buffer`, buffer)
     assert.equal(Buffer.compare(buffer, Buffer.from('FAA0', 'hex')), 0);
     const obj = TestUnsignedMappable.fromBitBuffer(buffer);
-    console.log(`obj`, obj)
     assert.deepEqual(obj, <any>x);
   });
 
@@ -269,16 +268,30 @@ describe("Bitmapper", () => {
     assert.deepEqual(_.pickBy(obj), _.pickBy(x));
   });
 
-  it("only by func test", async () => {
+  it("by func test", async () => {
     const x = { value1: 0xF, value2: 0xAA }
-    const buffer = toBitBuffer(x, TestUnsigned);
+    const buffer = toBitBuffer(x, { type: TestUnsigned });
     console.log(`buffer`, buffer)
     assert.equal(Buffer.compare(buffer, Buffer.from('FAA0', 'hex')), 0);
-    const obj = fromBitBuffer(buffer, TestUnsigned);
+    const obj = fromBitBuffer(buffer, { type: TestUnsigned });
     console.log(`obj`, obj)
     assert.equal(obj.value1, x.value1);
     assert.equal(obj.value2, x.value2);
   });
+
+  it("by object test", async () => {
+    const x = new TestUnsigned()
+    x.value1 = 0xF
+    x.value2 = 0xAA;
+    const buffer = toBitBuffer(x);
+    console.log(`buffer`, buffer)
+    assert.equal(Buffer.compare(buffer, Buffer.from('FAA0', 'hex')), 0);
+    const obj = fromBitBuffer(buffer, { type: TestUnsigned });
+    console.log(`obj`, obj)
+    assert.equal(obj.value1, x.value1);
+    assert.equal(obj.value2, x.value2);
+  });
+
 
   it("mix 1 empty", async () => {
     const x = new TestMixMappable();
@@ -293,14 +306,27 @@ describe("Bitmapper", () => {
 
   
   it("mix 1 null", async () => {
-    const buffer = toBitBuffer(null, TestUnsigned);
+    const buffer = toBitBuffer(null, { type: TestUnsigned });
     console.log(`buffer`, buffer)                    
     assert.equal(Buffer.compare(buffer, Buffer.from('0000', 'hex')), 0);
-    const obj = fromBitBuffer(buffer, TestUnsigned);
+    const obj = fromBitBuffer(buffer, { type: TestUnsigned });
     console.log(`obj`, obj)
     assert.equal(obj.value1, 0);
     assert.equal(obj.value2, 0);
   });
+
+  it("only by map", async () => {
+    const x = { value1: 0xF, value2: 0xAA }
+    const bitmap = [ { prop: "value1", size: 4, type: ValueType.unsigned }, { prop: "value2", size: 8, type: ValueType.unsigned } ];
+    const buffer = toBitBuffer(x, { bitmap });
+    console.log(`buffer1`, buffer)
+    assert.equal(Buffer.compare(buffer, Buffer.from('FAA0', 'hex')), 0);
+    const obj = fromBitBuffer(buffer, { bitmap });
+    console.log(`obj`, obj)
+    assert.equal(obj.value1, x.value1);
+    assert.equal(obj.value2, x.value2);
+  });
+
 
 });
 

@@ -1,12 +1,16 @@
 import { ValueMap, ValueType } from "./types";
 import { BitStream } from "bit-buffer";
 import _ from 'lodash';
+import { bitMappable } from "./decorators";
 
-export const fromBitBuffer = <T extends (new (...args: any[]) => {})>(buffer: Buffer | BitStream, constructor: T): InstanceType<T> => {
-    const map: ValueMap[] = constructor.prototype._map;
+export const fromBitBuffer = <T extends (new (...args: any[]) => {[x:string]: any})>(buffer: Buffer | BitStream, { type, bitmap }:{ type?: T, bitmap?: ValueMap[] }): InstanceType<T> => {
+    const map: ValueMap[] = bitmap ?? (<T>type)?.prototype?._map ??  (<any>type)?._map;
+    if(!map?.length)
+        throw 'NO BITMAP FOUND';
+
     const bitStream = Buffer.isBuffer(buffer) ? new BitStream(buffer) : buffer;
     (<any>bitStream).bigEndian = true;
-    const obj = new constructor()
+    const obj = type && typeof type === 'function' ? new type() : {};
     for (let i = 0; i < map?.length; i++) {
         const m = map[i];
         switch (m.type) {
@@ -30,15 +34,18 @@ export const fromBitBuffer = <T extends (new (...args: any[]) => {})>(buffer: Bu
             default:
                 obj[m.prop] = [];
                 for(let i = 0; i < m.size; i++) 
-                    obj[m.prop].push(fromBitBuffer(bitStream, m.type))
+                    obj[m.prop].push(fromBitBuffer(bitStream, { type: m.type }))
                 break;
         }
     }
     return <InstanceType<T>>obj;
 }
 
-export const toBitBuffer = <T extends (new (...args: any[]) => {})>(obj: { [x: string]: any }, type?: T, bs?: BitStream): Buffer => {
-    const map: ValueMap[] = type ? type.prototype._map : obj._map;
+export const toBitBuffer = <T extends (new (...args: any[]) => {})>(object: { [x: string]: any }, { type, bs, bitmap }: { type?: T, bitmap?: ValueMap[], bs?: BitStream } = {}): Buffer => {
+    const map: ValueMap[] = bitmap ?? type?.prototype?._map ?? object?._map;
+    
+    if(!map?.length)
+        throw 'NO BITMAP FOUND';
 
     const calcSize = (map: ValueMap[]) => {
         if (!map) return 0;
@@ -54,22 +61,32 @@ export const toBitBuffer = <T extends (new (...args: any[]) => {})>(obj: { [x: s
     (<any>bitStream).bigEndian = true;
     for (let i = 0; i < map?.length; i++) {
         const m = map[i];
-        const value = obj?.[m.prop] ?? 0;
+
         switch (m.type) {
             case ValueType.unsigned:
-            case ValueType.signed:
+            case ValueType.signed: {
+                let value = object?.[m.prop];
+                value =  value && typeof value === 'number' ? value : 0;
                 bitStream.writeBits(value, m.size);
                 break;
-            case ValueType.buffer:
+            }
+            case ValueType.buffer: {
+                const bufferSize = Math.ceil(m.size / 8)
+                let value = object?.[m.prop];
+                value =  value && Buffer.isBuffer(value) ? value : Buffer.alloc(bufferSize);
+                if(value.length < bufferSize)
+                    value = Buffer.concat([value, Buffer.alloc(bufferSize - value.length)])
                 const nBitStream = new BitStream(new Uint8Array(value).buffer);
                 (<any>nBitStream).bigEndian = true;
                 bitStream.writeBitStream(nBitStream, m.size);
                 break;
+            }
             default:
+                let value = object?.[m.prop] ?? [];
                 for (let i = 0; i < value?.length && i < m.size; i++) {
                     const v = value[i];
                     if (m.type?.prototype?._map) {
-                        toBitBuffer(v, m.type, bitStream);
+                        toBitBuffer(v, { type: m.type, bs: bitStream });
                     }
                 }
                 break;

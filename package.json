@@ -1,6 +1,6 @@
 {
   "name": "bitmapper",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Map objects to a compact buffer using a bit map and reverse it.",
   "author": "moraisp",
   "license": "MIT",
