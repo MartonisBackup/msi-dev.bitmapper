@@ -43,7 +43,6 @@ const buffer = obj1.toBitBuffer(); //this will return a fixed size buffer based 
 const obj2 = TestMappable.fromBitBuffer(buffer); //by acessing this static method you can get an instance of the TestMappable object similar to the obj1
 
 ```
-### Without typescript decorators 
 Don't need to use the bitMappable class decorator.
 ```typescript
 const obj1 = new Test();
@@ -51,6 +50,7 @@ const buffer = toBitBuffer(obj1);
 const obj2 = fromBitBuffer(buffer, { type: Test }); 
 ```
 
+### Without any typescript decorators 
 
 Also don't need to use any class decorator.
 ```typescript
