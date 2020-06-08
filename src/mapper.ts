@@ -2,14 +2,13 @@ import { ValueMap, ValueType } from "./types";
 import { BitStream } from "bit-buffer";
 import _ from 'lodash';
 
-export const fromBitBuffer = <T extends (new (...args: any[]) => {})>(constructor: T, buffer: Buffer | BitStream): InstanceType<T> => {
+export const fromBitBuffer = <T extends (new (...args: any[]) => {})>(buffer: Buffer | BitStream, constructor: T): InstanceType<T> => {
     const map: ValueMap[] = constructor.prototype._map;
     const bitStream = Buffer.isBuffer(buffer) ? new BitStream(buffer) : buffer;
     (<any>bitStream).bigEndian = true;
     const obj = new constructor()
     for (let i = 0; i < map?.length; i++) {
         const m = map[i];
-        const value = this[m.prop] ?? 0;
         switch (m.type) {
             case ValueType.unsigned:
                 obj[m.prop] = bitStream.readBits(m.size)
@@ -31,7 +30,7 @@ export const fromBitBuffer = <T extends (new (...args: any[]) => {})>(constructo
             default:
                 obj[m.prop] = [];
                 for(let i = 0; i < m.size; i++) 
-                    obj[m.prop].push(fromBitBuffer(m.type, bitStream))
+                    obj[m.prop].push(fromBitBuffer(bitStream, m.type))
                 break;
         }
     }

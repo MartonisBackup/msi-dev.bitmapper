@@ -7,7 +7,7 @@ export function bitMappable<T extends { new(...args: any[]): {} }>(constructor: 
     return class extends constructor {
         private _map: ValueMap[];
         static fromBitBuffer(buffer: Buffer) : InstanceType<T> {
-           return fromBitBuffer(constructor, buffer);
+           return fromBitBuffer(buffer, constructor);
         }
 
         toBitBuffer(): Buffer {
