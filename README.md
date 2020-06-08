@@ -27,7 +27,7 @@ class TestItem {
 
 class Test {
   //when the type is an array of other type the size is the fixed array length 
-  @value({ size: 14, type: TestMixItem })
+  @value({ size: 14, type: TestItem })
   array: TestMixItem[];
   //defaul type is unsigned number
   @value({ size: 10 })
