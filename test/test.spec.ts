@@ -327,14 +327,6 @@ describe("Bitmapper", () => {
     assert.equal(obj.value2, x.value2);
   });
 
-
-  it("test felipe", async () => {
-    const buffer2 =  Buffer.from('00000000000000000000001f44000000000003ff68000000000000000000000001c40500000900000000167b9139cb119000', 'hex')
-    const obj2 = TestMixMappable.fromBitBuffer(buffer2)
-    console.log(`obj2`, obj2)
-  });
-
-
 });
 
 
