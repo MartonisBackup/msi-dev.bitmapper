@@ -1,4 +1,4 @@
-# Product Name
+# bitmapper
 > Parse/unparse complex objects to/from a buffer array based on a bit structure;
 
 Setup a structure map by defining the bit size of each property. And then convert it back and forth.
