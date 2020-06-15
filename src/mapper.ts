@@ -8,7 +8,8 @@ export const fromBitBuffer = <T extends (new (...args: any[]) => {[x:string]: an
     if(!map?.length)
         throw 'NO BITMAP FOUND';
 
-    const bitStream = Buffer.isBuffer(buffer) ? new BitStream(buffer) : buffer;
+    const bitStream = Buffer.isBuffer(buffer) ? new BitStream(new Uint8Array(buffer).buffer) : buffer;
+    console.log(`bitStream`, bitStream.buffer);
     (<any>bitStream).bigEndian = true;
     const obj = type && typeof type === 'function' ? new type() : {};
     for (let i = 0; i < map?.length; i++) {
