@@ -62,6 +62,8 @@ Also don't need to use any class decorator.
 _For more examples and usage, please refer to the [Test](https://github.com/msi-dev/bitmapper/blob/master/test/test.spec.ts)._
 
 ## Release History
+* 0.0.5
+    * remove log
 * 0.0.4
     * fix strange problem with bit-buffer
 * 0.0.3
